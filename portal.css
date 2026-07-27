@@ -1,0 +1,268 @@
+/* ==========================================================================
+   VECTUZ Client Portal — styles
+   Loads after style.css and reuses its design tokens (colors, spacing,
+   radii, the --spring easing, and the .btn / .modal-* / .brand-cube /
+   .reveal / .mini-cube components) so the portal feels like the same
+   product as the marketing site, not a bolt-on.
+   ========================================================================== */
+
+.portal-body{ background: var(--bg); }
+
+/* ==========================================================================
+   Login screen
+   ========================================================================== */
+.login-screen{
+  min-height: 100vh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding: 32px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.login-bg{
+  position:absolute; inset:0; z-index:0;
+  background:
+    radial-gradient(60% 50% at 15% 8%, color-mix(in srgb, var(--green) 16%, transparent), transparent 70%),
+    radial-gradient(50% 45% at 90% 90%, color-mix(in srgb, var(--gold) 12%, transparent), transparent 70%);
+}
+.login-card{
+  position: relative; z-index: 1;
+  width: 100%; max-width: 420px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px 30px 30px;
+  text-align: center;
+  box-shadow: 0 30px 70px -30px rgba(0,0,0,.45);
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+.portal-brand{ justify-content:center; margin-bottom: 18px; }
+.login-cube-stage{ margin: 0 auto 18px; cursor: pointer; }
+.login-eyebrow{ margin-bottom: .4em; }
+.login-title{ font-size: 1.6rem; margin-bottom: .3em; }
+.login-sub{ color: var(--muted); font-size: .92rem; margin-bottom: 26px; }
+
+.login-form{ display:flex; flex-direction: column; gap: 16px; text-align:left; }
+.field{ display:flex; flex-direction:column; gap: 6px; }
+.field-label{ font-size: .8rem; font-weight:600; color: var(--muted); }
+.field input[type="text"], .field input[type="password"]{
+  font-family: inherit; font-size: .95rem;
+  padding: .8em 1em;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  transition: border-color .3s var(--spring), box-shadow .3s var(--spring);
+}
+.field input:focus{
+  outline: none;
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 20%, transparent);
+}
+.field-row{ display:flex; align-items:center; justify-content: space-between; margin-top: -4px; }
+.checkbox{ display:flex; align-items:center; gap: 8px; font-size: .85rem; color: var(--muted); cursor: pointer; }
+.checkbox input{ accent-color: var(--green); }
+.login-forgot{ font-size: .85rem; color: var(--muted); }
+.login-forgot:hover{ color: var(--green); }
+
+.login-submit{ width: 100%; margin-top: 6px; }
+.login-submit.is-loading .login-submit-label{ opacity: .55; }
+.login-demo-note{
+  font-size: .78rem; color: var(--muted); text-align:center; margin: 4px 0 0;
+  line-height: 1.5;
+}
+.login-footer{ position: relative; z-index:1; margin-top: 22px; font-size: .88rem; color: var(--muted); }
+.login-footer a{ color: var(--green); font-weight:600; }
+
+/* Feedback shake for empty/invalid submit */
+.login-card.shake{ animation: loginShake .5s var(--spring); }
+@keyframes loginShake{
+  0%,100%{ transform: translateZ(0) translateX(0); }
+  20%{ transform: translateZ(0) translateX(-8px); }
+  40%{ transform: translateZ(0) translateX(7px); }
+  60%{ transform: translateZ(0) translateX(-5px); }
+  80%{ transform: translateZ(0) translateX(3px); }
+}
+
+/* ==========================================================================
+   Dashboard shell
+   ========================================================================== */
+.dashboard{ min-height: 100vh; }
+.portal-main{ padding-bottom: 60px; }
+
+.portal-hero{ padding: 56px 0 32px; }
+.portal-greeting{ font-size: clamp(1.7rem, 3.4vw, 2.4rem); }
+.portal-greeting-sub{ color: var(--muted); max-width: 620px; margin-top: -.5em; }
+
+.portal-status-grid{
+  display:grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 32px;
+}
+.status-card{
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 18px 18px 16px;
+  transform: translateZ(0); backface-visibility: hidden;
+}
+.status-label{ display:block; font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+.status-value{ display:block; font-family:'Playfair Display', serif; font-size: 1.2rem; }
+.status-active{ color: var(--green); }
+
+/* ==========================================================================
+   Tiered plan accordion — additive feature lists
+   ========================================================================== */
+.portal-plan{ padding: 56px 0; border-top: 1px solid var(--border); }
+.tier-list{ margin-top: 34px; display:flex; flex-direction: column; gap: 14px; }
+
+.tier-card{
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden;
+  transform: translateZ(0); backface-visibility: hidden;
+  transition: border-color .4s var(--spring);
+}
+.tier-card-max{ border-color: color-mix(in srgb, var(--gold) 45%, var(--border)); }
+
+.tier-head{
+  width: 100%; display:flex; align-items:center; justify-content: space-between;
+  gap: 12px; padding: 18px 20px;
+  background: transparent; border: none; cursor: pointer;
+  color: var(--text); font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.tier-head-left{ display:flex; align-items:baseline; gap: 12px; flex-wrap: wrap; }
+.tier-name{ font-family:'Playfair Display', serif; font-size: 1.15rem; }
+.tier-card-max .tier-name{ color: var(--gold); }
+.tier-price{ font-size: .88rem; color: var(--muted); }
+.tier-chevron{
+  font-size: 1.2rem; color: var(--muted); line-height:1;
+  transition: transform .4s var(--spring);
+  flex-shrink: 0;
+}
+.tier-card[aria-expanded="true"] .tier-chevron,
+.tier-head[aria-expanded="true"] .tier-chevron{ transform: rotate(180deg); }
+
+.tier-body{
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .55s var(--spring);
+}
+.tier-card.is-open .tier-body{ max-height: 2400px; }
+
+.tier-includes{ padding: 0 20px; font-size: .88rem; color: var(--muted); margin: 0 0 14px; }
+.tier-card.is-open .tier-includes{ padding-top: 2px; }
+
+.tier-feature-list{ display:flex; flex-direction: column; gap: 16px; padding: 0 20px 22px; margin:0; }
+.tier-feature-list h4{ font-size: .95rem; margin: 0 0 .25em; }
+.tier-feature-list p{ font-size: .85rem; color: var(--muted); margin:0; }
+.tier-feature-list li.tier-extra h4::after{
+  content: "portal add-on";
+  font-family: 'DM Sans', sans-serif;
+  font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--green);
+  background: color-mix(in srgb, var(--green) 14%, transparent);
+  border-radius: 999px;
+  padding: 2px 8px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* ==========================================================================
+   Payments
+   ========================================================================== */
+.portal-payments{ padding: 56px 0; border-top: 1px solid var(--border); }
+.payment-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 30px; }
+.payment-card{
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 22px 20px;
+  transform: translateZ(0); backface-visibility: hidden;
+}
+.payment-label{ font-weight:600; margin-bottom: 8px; }
+.payment-value{ font-family:'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 8px; }
+.payment-placeholder{ color: var(--muted); font-style: italic; font-family:'DM Sans',sans-serif; font-size: .85rem; }
+.payment-note{ font-size: .84rem; color: var(--muted); margin: 0; }
+.payment-card-daraja{ border-color: color-mix(in srgb, var(--gold) 35%, var(--border)); position: relative; }
+.payment-badge{
+  display:inline-block; font-size: .68rem; font-weight:700; text-transform: uppercase; letter-spacing:.04em;
+  background: var(--gold); color:#231a04; padding: 3px 10px; border-radius: 999px; margin-bottom: 10px;
+}
+.payment-card-daraja button[disabled]{ margin-top: 14px; opacity: .5; cursor: not-allowed; }
+.payment-card-daraja button[disabled]:hover{ transform:none; border-color: var(--border); color: var(--text); }
+
+/* ==========================================================================
+   Support
+   ========================================================================== */
+.portal-support{ padding: 56px 0 70px; border-top: 1px solid var(--border); text-align:center; }
+.portal-support .btn{ margin-top: 8px; }
+
+.portal-footnote{
+  text-align:center; font-size: .78rem; color: var(--muted);
+  padding: 18px 0 40px; border-top: 1px solid var(--border);
+}
+
+.logout-btn{ padding: .6em 1.2em; font-size: .85rem; }
+
+/* ==========================================================================
+   Easter egg 1 — typing "mpesa" anywhere triggers a green coin rain
+   ========================================================================== */
+.mpesa-rain{
+  position: fixed; inset:0; z-index: 9000; pointer-events:none; overflow:hidden;
+}
+.mp-coin{
+  position:absolute; top:-40px;
+  font-size: 22px;
+  opacity: 0;
+  animation: coinFall linear forwards;
+  will-change: transform, opacity;
+}
+@keyframes coinFall{
+  0%{ opacity: 0; transform: translateY(0) rotate(0deg); }
+  8%{ opacity: 1; }
+  92%{ opacity: 1; }
+  100%{ opacity: 0; transform: translateY(110vh) rotate(340deg); }
+}
+
+.egg-toast{
+  position: fixed; left: 50%; bottom: 34px; z-index: 9100;
+  transform: translate(-50%, 20px);
+  background: var(--card); border: 1px solid var(--green);
+  color: var(--text);
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: .88rem; font-weight: 600;
+  box-shadow: 0 14px 40px -12px rgba(0,0,0,.5);
+  opacity: 0; pointer-events:none;
+  transition: opacity .4s var(--spring), transform .4s var(--spring);
+}
+.egg-toast.show{ opacity: 1; transform: translate(-50%, 0); }
+
+/* ==========================================================================
+   Easter egg 2 — tap the login cube 5x to open the dev-console panel
+   ========================================================================== */
+.egg-panel{
+  position: fixed; inset:0; z-index: 9200;
+  display:flex; align-items:center; justify-content:center;
+  padding: 20px;
+  background: rgba(4,6,9,.7);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  opacity: 0; visibility: hidden;
+  transition: opacity .4s var(--spring), visibility .4s var(--spring);
+}
+.egg-panel.open{ opacity:1; visibility: visible; }
+.egg-panel-card{
+  position: relative;
+  width: 100%; max-width: 380px;
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 30px 26px 26px; text-align:center;
+  transform: scale(.9); transition: transform .4s var(--spring);
+}
+.egg-panel.open .egg-panel-card{ transform: scale(1); }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width: 720px){
+  .portal-status-grid{ grid-template-columns: 1fr; }
+  .payment-grid{ grid-template-columns: 1fr; }
+  .portal-navlinks{ display:none; }
+}
+@media (max-width: 520px){
+  .login-card{ padding: 30px 22px 24px; }
+}
