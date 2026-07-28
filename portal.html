@@ -283,6 +283,25 @@
       </div>
     </section>
 
+    <!-- ============ UI STATES — demo preview ============ -->
+    <section id="states" class="portal-states container">
+      <p class="eyebrow reveal">Preview</p>
+      <h2 class="section-title reveal">Every state, animated.</h2>
+      <p class="section-sub reveal">These fire for real once Firestore and Daraja are live — for now, tap any to preview how it looks and moves.</p>
+      <div class="state-trigger-grid reveal">
+        <button class="state-trigger" data-state="loading" type="button">Loading</button>
+        <button class="state-trigger" data-state="empty" type="button">Empty</button>
+        <button class="state-trigger" data-state="error" type="button">Error</button>
+        <button class="state-trigger" data-state="offline" type="button">No internet</button>
+        <button class="state-trigger" data-state="slow" type="button">Slow network</button>
+        <button class="state-trigger" data-state="noResults" type="button">No search results</button>
+        <button class="state-trigger" data-state="denied" type="button">Permission denied</button>
+        <button class="state-trigger" data-state="sessionExpired" type="button">Session expired</button>
+        <button class="state-trigger" data-state="validation" type="button">Form validation</button>
+        <button class="state-trigger" data-state="success" type="button">Success</button>
+      </div>
+    </section>
+
     <!-- ============ SUPPORT ============ -->
     <section id="support" class="portal-support container">
       <p class="eyebrow reveal">Support</p>
@@ -294,6 +313,16 @@
   </main>
 
   <p class="portal-footnote container">Client Portal · demo build — login is a stand-in until Firestore auth and the Daraja API are connected.</p>
+</div>
+
+<!-- ============ STATE OVERLAY (loading / error / offline / etc) ============ -->
+<div class="state-overlay" id="stateOverlay" aria-hidden="true">
+  <div class="state-card" id="stateCard">
+    <span class="state-icon" id="stateIcon">⏳</span>
+    <h3 class="state-title" id="stateTitle">Loading</h3>
+    <p class="state-message" id="stateMessage">One moment…</p>
+    <div class="state-actions" id="stateActions"></div>
+  </div>
 </div>
 
 <!-- ============ EASTER EGG OVERLAYS ============ -->

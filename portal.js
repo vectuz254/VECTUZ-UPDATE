@@ -56,24 +56,135 @@
   }
 
   // ==========================================================================
+  // UI states — one reusable overlay covering all 10 states from the
+  // checklist. Real triggers (form validation, loading, success) already
+  // route through this; the rest are demo-only until there's a backend
+  // that can actually go offline, deny permission, expire a session, etc.
+  // ==========================================================================
+  var STATE_CONFIG = {
+    loading:        { icon: "◐", title: "Loading",              message: "One moment while we fetch that…",              tone: "neutral", anim: "anim-spin" },
+    empty:          { icon: "📭", title: "Nothing here yet",     message: "Once you have projects or invoices, they'll show up here.", tone: "neutral", anim: "anim-fade" },
+    error:          { icon: "⚠️", title: "Something went wrong", message: "That didn't go through. No changes were saved.", tone: "error",   anim: "anim-shake", actions: [{ label: "Try again", primary: true }, { label: "Dismiss" }] },
+    offline:        { icon: "📡", title: "No internet connection", message: "You're offline — we'll retry automatically once you're back.", tone: "error", anim: "anim-shake", actions: [{ label: "Retry now", primary: true }] },
+    slow:           { icon: "🐢", title: "Slow network",         message: "This is taking longer than usual. Still working on it…", tone: "warn", anim: "anim-pulse" },
+    noResults:      { icon: "🔍", title: "No results found",     message: "Nothing matched that search. Try a different term.", tone: "neutral", anim: "anim-drift" },
+    denied:         { icon: "🔒", title: "Permission denied",    message: "Your account doesn't have access to this yet — ask your admin to upgrade your role.", tone: "error", anim: "anim-shake", actions: [{ label: "Close" }] },
+    sessionExpired: { icon: "⏰", title: "Session expired",       message: "For your security, you've been signed out. Please log in again.", tone: "warn", anim: "anim-pop", actions: [{ label: "Log in again", primary: true, action: "logout" }] },
+    validation:     { icon: "✏️", title: "Check your details",   message: "One or more fields need a second look before we can continue.", tone: "warn", anim: "anim-shake" },
+    success:        { icon: "✅", title: "Success",               message: "That went through cleanly.",                   tone: "success", anim: "anim-pop" }
+  };
+
+  function bindStateOverlay() {
+    var overlay = document.getElementById("stateOverlay");
+    var card = document.getElementById("stateCard");
+    var iconEl = document.getElementById("stateIcon");
+    var titleEl = document.getElementById("stateTitle");
+    var msgEl = document.getElementById("stateMessage");
+    var actionsEl = document.getElementById("stateActions");
+    if (!overlay) return;
+
+    var autoHideTimer = null;
+
+    function showState(key, overrides) {
+      var cfg = STATE_CONFIG[key];
+      if (!cfg) return;
+      var merged = Object.assign({}, cfg, overrides || {});
+
+      card.className = "state-card tone-" + merged.tone;
+      iconEl.className = "state-icon " + merged.anim;
+      // Force the icon animation to replay even if the same state fires twice in a row.
+      void iconEl.offsetWidth;
+      iconEl.textContent = merged.icon;
+      titleEl.textContent = merged.title;
+      msgEl.textContent = merged.message;
+
+      actionsEl.innerHTML = "";
+      var actions = merged.actions || [{ label: "Close" }];
+      actions.forEach(function (a) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "btn ripple " + (a.primary ? "btn-primary" : "btn-ghost");
+        btn.textContent = a.label;
+        btn.addEventListener("click", function () {
+          if (a.action === "logout") {
+            hideState();
+            var logoutBtn = document.getElementById("logoutBtn");
+            if (logoutBtn) logoutBtn.click();
+          } else {
+            hideState();
+          }
+        });
+        actionsEl.appendChild(btn);
+      });
+
+      overlay.classList.add("open");
+      window.clearTimeout(autoHideTimer);
+      if (merged.autoHideMs) {
+        autoHideTimer = window.setTimeout(hideState, merged.autoHideMs);
+      }
+    }
+
+    function hideState() {
+      overlay.classList.remove("open");
+    }
+
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay) hideState();
+    });
+
+    document.querySelectorAll(".state-trigger").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        showState(btn.dataset.state);
+      });
+    });
+
+    // Exposed so login logic (outside this closure) can trigger states too.
+    window.__vectuzShowState = showState;
+    window.__vectuzHideState = hideState;
+  }
+
+  function showState(key, overrides) {
+    if (window.__vectuzShowState) window.__vectuzShowState(key, overrides);
+  }
+
+  // ==========================================================================
   // Mini-cube builder — same tile-face pattern as main.js's modal cube,
   // reused here so the login screen's cube isn't just a static shape.
   // ==========================================================================
   function buildMiniCube(cube) {
     if (!cube || cube.dataset.built) return;
-    var faces = ["front", "back", "right", "left", "top", "bottom"];
-    faces.forEach(function (name) {
-      var face = document.createElement("div");
-      face.className = "mface mface-" + name;
-      for (var i = 0; i < 9; i++) {
-        var tile = document.createElement("div");
-        tile.className = "tile";
-        tile.style.background = "#00e87a";
-        face.appendChild(tile);
-      }
-      cube.appendChild(face);
-    });
-    cube.dataset.built = "1";
+    try {
+      var colors = {
+        "mface-front": "#00e87a",
+        "mface-back": "#f5c842",
+        "mface-right": "#e84444",
+        "mface-left": "#3a8fe8",
+        "mface-top": "#f0ece4",
+        "mface-bottom": "#6b7585"
+      };
+      Object.keys(colors).forEach(function (cls) {
+        var face = document.createElement("div");
+        face.className = "mface " + cls;
+        for (var i = 0; i < 9; i++) {
+          var tile = document.createElement("div");
+          tile.className = "tile";
+          tile.style.background = colors[cls];
+          face.appendChild(tile);
+        }
+        cube.appendChild(face);
+      });
+      cube.dataset.built = "1";
+      // Smooth entrance instead of popping in fully-formed.
+      cube.style.opacity = "0";
+      cube.style.transform += " scale(.6)";
+      requestAnimationFrame(function () {
+        cube.style.transition = "opacity .5s var(--spring), transform .5s var(--spring)";
+        cube.style.opacity = "1";
+      });
+    } catch (err) {
+      // If this ever throws, fail visibly instead of leaving a blank square.
+      showState("error", { message: "The cube animation couldn't load, but sign-in still works." });
+    }
   }
 
   // ==========================================================================
@@ -99,6 +210,11 @@
         card.classList.remove("shake");
         void card.offsetWidth;
         card.classList.add("shake");
+        showState("validation", {
+          message: !idVal && !passVal
+            ? "Enter both your email/phone and your password to sign in."
+            : (!idVal ? "Enter your email or phone number." : "Enter your password.")
+        });
         return;
       }
 
@@ -114,10 +230,11 @@
     });
 
     function enterDashboard(identifier) {
-      loginScreen.style.transition = "opacity .5s ease";
-      loginScreen.style.opacity = "0";
+      showState("success", { title: "Signed in", message: "Loading your portal…", autoHideMs: 900 });
+      loginScreen.classList.add("is-leaving");
       window.setTimeout(function () {
         loginScreen.hidden = true;
+        loginScreen.classList.remove("is-leaving");
         dashboard.hidden = false;
         window.scrollTo(0, 0);
         setGreeting(identifier);
@@ -140,8 +257,8 @@
     btn.addEventListener("click", function () {
       document.getElementById("dashboard").hidden = true;
       var loginScreen = document.getElementById("loginScreen");
+      loginScreen.classList.remove("is-leaving");
       loginScreen.hidden = false;
-      loginScreen.style.opacity = "";
       document.getElementById("loginForm").reset();
       var submitBtn = document.getElementById("loginSubmit");
       submitBtn.classList.remove("is-loading");
@@ -278,6 +395,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     bindThemeToggle();
     bindRipples();
+    bindStateOverlay();
     buildMiniCube(document.getElementById("loginCube"));
     bindLogin();
     bindLogout();
